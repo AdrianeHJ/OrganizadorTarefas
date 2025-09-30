@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de tarefas</title>
+    <style>
+        :root {
+          --primary: #2563eb;
+          --danger: #dc2626;
+          --muted: #6b7280;
+          --bg: #f6f7fb;
+          --card: #ffffff;
+          --ok: #059669;
+        }
+        * { 
+            box-sizing: border-box; 
+        }
+        body {
+          margin: 0; 
+          font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial;
+          background: var(--bg); 
+          color: #111827;
+        }
+        header {
+          padding: 24px 16px; 
+          background: var(--card); 
+          border-bottom: 1px solid #e5e7eb;
+          position: sticky; 
+          top: 0; 
+        }
+        .container { 
+            max-width: 900px; 
+            margin: 0 auto; 
+            padding: 16px; 
+        }
+        h1 { 
+            margin: 0 0 8px; 
+            font-size: 1.5rem; 
+        }
+        h2 {
+            margin-top:0;
+        }
+        .actions { 
+            display: flex; 
+            gap: 12px; 
+            align-items: center; 
+        }
+        button, .btn {
+          border: none; 
+          padding: 10px 14px; 
+          border-radius: 8px; 
+          cursor: pointer; 
+          font-weight: 600;
+        }
+        .btn-primario { 
+            background: var(--primary); 
+            color: white; 
+        }
+        .btn-secondario { 
+            background: #e5e7eb; 
+            color: #111827; 
+        }
+        .btn-danger { 
+            background: var(--danger); 
+            color: white; 
+        }
+        .card {
+          background: var(--card); 
+          border: 1px solid #e5e7eb; 
+          border-radius: 12px; 
+          padding: 16px;
+        }
+        .grid { 
+            display: grid; 
+            gap: 16px; 
+        }
+        .tasks { 
+            margin-top: 16px; 
+        }
+        .task {
+          display: grid; 
+          grid-template-columns: 1fr auto; 
+          gap: 8px; 
+          align-items: start;
+          padding: 14px; 
+          border: 1px solid #e5e7eb; 
+          border-radius: 10px; 
+          background: white;
+        }
+        .task.overdue { 
+            border-color: #fecaca; 
+            background: #fff1f2; 
+        }
+        .task-header { 
+            display: flex; 
+            gap: 8px; 
+            align-items: center; 
+        }
+        .badge {
+          font-size: 12px; 
+          padding: 2px 8px; 
+          border-radius: 999px; 
+          font-weight: 700;
+          border: 1px solid;
+        }
+        .badge.overdue { 
+            color: var(--danger); 
+            border-color: #fecaca; 
+            background: #fee2e2; 
+        }
+        .badge.ok { 
+            color: var(--ok); 
+            border-color: #bbf7d0; 
+            background: #dcfce7; 
+        }
+        .task-meta { 
+            color: var(--muted); 
+            font-size: 14px; 
+        }
+        .task-desc { 
+            margin: 6px 0 0; 
+            color: #374151;
+        }
+        .empty {
+          text-align: center; 
+          color: var(--muted); 
+          padding: 32px; 
+          border: 2px dashed #e5e7eb; 
+          border-radius: 12px;
+          background: #fafafa;
+        }
+        form.grid { 
+            grid-template-columns: 1fr; 
+        }
+        label { 
+            font-weight: 600; 
+            font-size: 14px; 
+            margin-bottom: 6px; 
+            display: block; 
+        }
+        input[type="text"], textarea, input[type="date"] {
+          width: 100%; 
+          padding: 10px; 
+          border: 1px solid #e5e7eb; 
+          border-radius: 8px; 
+          font-size: 14px; 
+          background: white;
+        }
+        textarea { 
+            min-height: 80px; 
+            resize: vertical; 
+        }
+        .row { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 12px; 
+        }
+        #tarefas {
+          text-align: left;
+        }
+      </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+          <h1>Gerenciador de tarefas</h1>
+          <div class="actions">
+            <button id="btnNovaTarefa" class="btn-primario">Incluir nova tarefa</button>
+          </div>
+        </div>
+      </header>
+     
+      <main class="container grid">
+        <section id="formSection" class="card">
+          <h2>Nova tarefa</h2>
+          <form id="taskForm" class="grid">
+            <div class="row">
+              <div>
+                <label for="titulo">Título</label>
+                <input id="titulo" name="titulo" type="text" placeholder="Ex.: Estudar para a prova" required />
+              </div>
+              <div>
+                <label for="responsavel">Responsável</label>
+                <input id="responsavel" name="responsavel" type="text" required />
+              </div>
+              <div>
+                <label for="dataTermino">Data de término</label>
+                <input id="dataTermino" name="dataTermino" type="date" required />
+              </div>
+            </div>
+            <div>
+              <label for="descricao">Descrição</label>
+              <textarea id="descricao" name="descricao"></textarea>
+            </div>
+            <div style="display:flex; gap:8px; justify-content:flex-end;">
+              <button type="button" id="btnCancelar" class="btn-secondario">Cancelar</button>
+              <button type="submit" id="enviar" class="btn-primario">Salvar tarefa</button>
+            </div>
+          </form>
+        </section>
+     
+        <section class="card">
+          <h2>Tarefas cadastradas</h2>
+          <div id="tasksContainer" class="tasks grid"></div>
+          <div id="emptyState" class="empty">
+            <section id="tarefas" class="card">
+              <div class="tarefa">
+                <h3 id="tarefaCadastrada"><b></b></h3><br>
+                <h4 id="responsavelCadastrada"><b></b></h4><br>
+                <p id="dataTerminoCadastrada"><b></b></p>
+                <p id="descricaoCadastrada" style="margin-top:10px;"></p>
+              </div>
+            </section>
+          </div>
+        </section>
+      </main>
+
+      
+    <script>
+
+    async function enviarDados(evt) {
+      evt.preventDefault(); 
+      const elForm = evt.target;
+      const dados = {
+        titulo: elForm.titulo.value,
+        responsavel: elForm.responsavel.value,
+        descricaoTarefa: elForm.descricao.value,
+        dataTermino: elForm.dataTermino.value,
+      }
+      console.log(JSON.stringify(dados))
+      try {
+        const httpResp = await fetch('http://localhost:8080/tarefas', {
+          method: 'post',
+          headers: {
+            'content-type': 'application/json'
+          },
+          body: JSON.stringify(dados)
+        });
+        if (!httpResp.ok) {
+          // Tratamento dos erros
+          throw new Error('Erro HTTP: Status Code ' + httpResp.statusCode);
+        }
+        alert('Tarefa cadastrada com sucesso');
+      } catch (err) {
+        alert(err);
+      }
+    }
+    //document.getElementById('titulo').value = titulo; alterar para fetch
+    //document.getElementById('responsavel').value = responsavel;
+    //document.getElementById('descricao').value = descricaoTarefa;
+    //document.getElementById('dataTermino').value = dataTermino;
+
+    document.getElementById('taskForm').onsubmit = enviarDados;
+
+    fetch('http://localhost:8080/tarefas')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('tarefaCadastrada').innerHTML = data[0].titulo;
+        })
+        .catch(error => console.error('Erro:', error));
+
+    </script>
+</body>
+</html>
