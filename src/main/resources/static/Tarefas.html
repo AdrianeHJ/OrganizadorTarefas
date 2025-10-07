@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quadro de Tarefas</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --danger: #dc2626;
+      --muted: #6b7280;
+      --bg: #f6f7fb;
+      --card: #ffffff;
+      --ok: #059669;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial;
+      background: var(--bg);
+      color: #111827;
+    }
+
+    header {
+      padding: 24px 16px;
+      background: var(--card);
+      border-bottom: 1px solid #e5e7eb;
+      position: sticky;
+      top: 0;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 1.5rem;
+    }
+
+    h2 {
+      margin-top: 0;
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    button,
+    .btn {
+      border: none;
+      padding: 10px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .btn-primario {
+      background: var(--primary);
+      color: white;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 16px;
+    }
+
+    .empty {
+      text-align: center;
+      color: var(--muted);
+      padding: 32px;
+      border: 2px dashed #e5e7eb;
+      border-radius: 12px;
+      background: #fafafa;
+    }
+
+    #tarefas {
+      text-align: left;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="container">
+      <h1>Gerenciador de tarefas</h1>
+      <div class="actions">
+        <button id="btnNovaTarefa" class="btn-primario">Incluir nova tarefa</button>
+      </div>
+    </div>
+  </header>
+
+    <section class="container">
+      <h2>Tarefas cadastradas</h2>
+      <div id="tasksContainer" class="tasks grid"></div>
+      <div id="emptyState" class="empty">
+        <section id="tarefas" class="card">
+        </section>
+      </div>
+    </section>
+  </main>
+
+
+  <script>
+    async function enviarDados(evt) {
+      evt.preventDefault();
+      const elForm = evt.target;
+      const dados = {
+        titulo: elForm.titulo.value,
+        responsavel: elForm.responsavel.value,
+        descricaoTarefa: elForm.descricao.value,
+        dataTermino: elForm.dataTermino.value,
+      }
+      console.log(JSON.stringify(dados))
+      try {
+        const httpResp = await fetch('http://localhost:8080/tarefas', {
+          method: 'post',
+          headers: {
+            'content-type': 'application/json'
+          },
+          body: JSON.stringify(dados)
+        });
+        if (!httpResp.ok) {
+          // Tratamento dos erros
+          throw new Error('Erro HTTP: Status Code ' + httpResp.statusCode);
+        }
+        alert('Tarefa cadastrada com sucesso');
+      } catch (err) {
+        alert(err);
+      }
+    }
+
+    fetch('http://localhost:8080/tarefas')
+      .then(response => response.json())
+      .then(data => {
+        const tarefas = document.getElementById('tarefas');
+        tarefas.innerHTML = '';
+
+        if (data.length === 0) {
+          tarefas.innerHTML = '<div class="empty">Nenhuma tarefa cadastrada.</div>';
+        } else {
+          data.forEach(tarefa => {
+            const taskElement = document.createElement('div');
+            taskElement.classList.add('task');
+
+            taskElement.innerHTML = `
+                      <div>
+                          <h3>${tarefa.titulo}</h3>
+                          <p class="responsavelCadastrada">Responsável: ${tarefa.responsavel}</p>
+                          <p class="dataTerminoCadastrada">Data de término: ${tarefa.dataTermino}</p>
+                          <p class="descricaoCadastrada">${tarefa.descricaoTarefa}</p>
+                      </div>
+                  `;
+
+            tarefas.appendChild(taskElement);
+          });
+        }
+      })
+      .catch(error => console.error('Erro:', error));
+
+    document.getElementById('btnNovaTarefa').addEventListener('click', () => {
+          window.location.href = 'Cadastro.html';
+        });
+  </script>
+</body>
+
+</html>

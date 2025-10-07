@@ -5,19 +5,24 @@ import java.time.LocalDate;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 public class Tarefa {
     
     @NotBlank
+    @Size(min = 3)
     private String titulo;
 
     @NotBlank
+    @Size(min = 3)
     private String responsavel;
 
     @NotNull
     @FutureOrPresent
     private LocalDate dataTermino;
 
+    @NotBlank
+    @Size(min = 3)
     private String descricaoTarefa;
 
     public Tarefa(String titulo, String responsavel,

@@ -15,9 +15,7 @@ public class TarefaService {
 
     public TarefaService(){
         mapTarefas = new HashMap<>();
-        mapTarefas.put("tarefa1",
-        new Tarefa("tarefa1", "Adriane", LocalDate.parse("2025-09-28"),
-        "bla bla bla"));
+        mapTarefas.put("teste1", new Tarefa("teste", "Adriane", LocalDate.parse("2025-09-28"), "bla bla bla"));
     }
 
     public List<Tarefa> findAll() {
